@@ -8,8 +8,8 @@ import time
 
 TO_CITY = "Лида"
 FROM_CITY = "Минск"
-LOGIN = 'egorkartoshkin003@gmail.com'
-PASSWORD = '03012007Egor'
+LOGIN = ''
+PASSWORD = ''
 
 
 def setup_driver():
@@ -180,5 +180,6 @@ def main():
     buying_ticket(driver, to_city=TO_CITY, from_city=FROM_CITY, login=LOGIN, password=PASSWORD)
     input("")
     driver.quit()
+
 
 main()
