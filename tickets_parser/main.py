@@ -6,8 +6,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-TO_CITY = "Лида"
-FROM_CITY = "Минск"
+TO_CITY = ''
+FROM_CITY = ''
 LOGIN = ''
 PASSWORD = ''
 
@@ -183,3 +183,4 @@ def main():
 
 
 main()
+
