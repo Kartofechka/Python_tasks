@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../static/style.css">
+  <title>Анкета</title>
+</head>
+<body>
+
+  <div class="user_data" id="user_data">
+    <form class="inputs" method="post" action="/login">
+      <h2>Авторизация</h1>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+      <div class="input_with_icon">
+        <img src="../assets/user.jpg" alt="иконка">
+        <input id="name" name="username" type="text" placeholder="Имя" required>
+      </div>
+      <div class="input_with_icon">
+        <img src="../assets/password.png" alt="иконка">
+        <input id="password" name="password" type="password" placeholder="Пароль" required>
+      </div>
+      <label class="remember"><input id="remember_me" type="checkbox">Запомнить меня?</label>
+      <button id="login_btn" type="submit">Логин</button>
+    </form>
+  </div>
+</body>
+</html>
