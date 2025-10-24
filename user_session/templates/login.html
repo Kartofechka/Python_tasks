@@ -10,9 +10,12 @@
 
   <div class="user_data" id="user_data">
     <form class="inputs" method="post" action="/login">
-      <h2>Авторизация</h1>
+      <h2>Авторизация</h2>
         {% if error %}
-            <p class="error">{{ error }}</p>
+          <p class="error" style="color: rgb(255, 0, 0);">{{ error }}</p>
+        {% endif %}
+        {% if message %}
+          <p class="message" style="color: rgb(255, 123, 0);">{{ message }}</p>
         {% endif %}
       <div class="input_with_icon">
         <img src="../assets/user.jpg" alt="иконка">
