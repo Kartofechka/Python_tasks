@@ -5,6 +5,8 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.exception_handlers import http_exception_handler
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
 
@@ -47,7 +49,14 @@ def login(request: Request,
             username: str = Form(...),
             password: str = Form(...)):
     users = pd.read_csv(USERS)
-    if username in users['user'].values[0]: 
+    if username in users['user'].values:
+        session_id = request.cookies.get("session_id")
+        if session_id in sessions:
+            del sessions[session_id]
+            return templates.TemplateResponse("login.html", {
+                "request": request,
+                "message": "Глупец, ты уже был авторизован"
+            }) 
         if str(users[users['user'] == username].values[0][1]) == password:
             session_id = str(uuid.uuid4())
             sessions[session_id] = datetime.now()
@@ -65,12 +74,31 @@ def login(request: Request,
 @app.get("/logout", response_class=HTMLResponse)
 def logout(request: Request):
     session_id = request.cookies.get("session_id")
-    del sessions[session_id]
-    return templates.TemplateResponse("login.html", {"request": request,
-                                        "message": "Вы вышли из системы",
-                                        "url": "/login"})
+    if session_id in sessions:
+        del sessions[session_id]
+    return templates.TemplateResponse("login.html", {
+        "request": request,
+        "message": "Вы вышли из системы"
+    })
+
 
 @app.get("/home/admin", response_class=HTMLResponse)
 def login_page(request: Request):
     return templates.TemplateResponse("main.html", {"request": request})
 
+
+@app.get("/to_login")
+def to_login():
+    return RedirectResponse(url="/login", status_code=302)
+
+
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    if exc.status_code == 404:
+        return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+    return await http_exception_handler(request, exc)
+
+
+@app.get("/login", response_class=HTMLResponse)
+def get_login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
