@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../static/style.css">
+  <title>Регистрация</title>
+</head>
+<body>
+
+  <div class="user_data" id="user_data">
+    <form class="inputs" method="post" action="/to_login">
+      <h2>Регистрицая пользователя</h2>
+      <div class="input_with_icon">
+        <img src="../assets/user.jpg" alt="иконка">
+        <input id="reg_name" name="reg_username" type="text" placeholder="Имя" required>
+      </div>
+      <div class="input_with_icon">
+        <img src="../assets/password.png" alt="иконка">
+        <input id="reg_password" name="reg_password" type="password" placeholder="Пароль" required>
+      </div>
+      <button id="login_btn" type="submit">Зарегистрировать</button>
+    </form>
+  </div>
+</body>
+</html>
