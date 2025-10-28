@@ -37,43 +37,9 @@ logging.basicConfig(level=logging.INFO,format="%(asctime)s - %(levelname)s - %(m
 
 logger = logging.getLogger(__name__)
 
-def log(func):
-    @wraps(func)
-    async def async_wrapper(*args, **kwargs):
-        request: Request = kwargs.get("request") or (args[0] if args else None)
-        client_ip = request.client.host if request else "неизвестно"
-        path = request.url.path if request else "неизвестно"
-
-        logger.info(f"Вызов: {func.__name__} | Путь: {path} | IP: {client_ip}")
-        try:
-            result = await func(*args, **kwargs)
-            logger.info(f"Завершено: {func.__name__} | Путь: {path} | IP: {client_ip}")
-            return result
-        except Exception as e:
-            logger.error(f"Ошибка в {func.__name__} | Путь: {path} | IP: {client_ip} | Ошибка: {e}")
-            raise
-
-    @wraps(func)
-    def sync_wrapper(*args, **kwargs):
-        request: Request = kwargs.get("request") or (args[0] if args else None)
-        client_ip = request.client.host if request else "неизвестно"
-        path = request.url.path if request else "неизвестно"
-
-        logger.info(f"Вызов: {func.__name__} | Путь: {path} | IP: {client_ip}")
-        try:
-            result = func(*args, **kwargs)
-            logger.info(f"Завершено: {func.__name__} | Путь: {path} | IP: {client_ip}")
-            return result
-        except Exception as e:
-            logger.error(f"Ошибка в {func.__name__} | Путь: {path} | IP: {client_ip} | Ошибка: {e}")
-            raise
-
-    return async_wrapper if inspect.iscoroutinefunction(func) else sync_wrapper
-
 
 #Контролоь авторизации и сессии
 @app.middleware("http")
-@log 
 async def check_session(request: Request, call_next):
     path = request.url.path
     if path.startswith("/static") or path.startswith("/assets") or path in white_urls:
@@ -103,12 +69,10 @@ async def session_cleaner():
 
 @app.get("/", response_class=HTMLResponse)
 @app.get("/login", response_class=HTMLResponse)
-@log
 def get_login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
-@log
 def login(request: Request,
             username: str = Form(...),
             password: str = Form(...)):
@@ -129,7 +93,6 @@ def login(request: Request,
             response.set_cookie(key="session_id", value=session_id)
             response.set_cookie(key="user_name", value=username)
             response.set_cookie(key="role", value = str(users[users['user'] == username].values[0][2]))
-            print(request.cookies.get("session_id"), request.cookies.get("user_name"), request.cookies.get("role"))
             logger.info(f"Успешный вход: {username} | session_id: {session_id}")
             return response
         logger.warning(f"Неверный пароль для: {username}")
@@ -143,7 +106,6 @@ def login(request: Request,
 
 
 @app.get("/logout", response_class=HTMLResponse)
-@log
 def logout(request: Request):
     user_name = request.cookies.get("user_name")
     session_id = request.cookies.get("session_id")
@@ -157,7 +119,6 @@ def logout(request: Request):
 
 
 @app.get("/home/admin", response_class=HTMLResponse)
-@log
 def login_page(request: Request):
     user_name = request.cookies.get("user_name")
     logger.info(f"Админ {user_name} перешел в main")
@@ -165,7 +126,6 @@ def login_page(request: Request):
 
 
 @app.get("/to_login", response_class=HTMLResponse)
-@log
 def to_login(request: Request):
     user_name = request.cookies.get("user_name")
     session_id = request.cookies.get("session_id")
@@ -174,7 +134,6 @@ def to_login(request: Request):
 
 
 @app.exception_handler(StarletteHTTPException)
-@log
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
         user_name = request.cookies.get("user_name")
@@ -185,7 +144,6 @@ async def custom_http_exception_handler(request: Request, exc: StarletteHTTPExce
 
 
 @app.get("/register", response_class=HTMLResponse)
-@log
 def get_register_page(request: Request):
     user_name = request.cookies.get("user_name")
     session_id = request.cookies.get("session_id")
@@ -197,7 +155,6 @@ def get_register_page(request: Request):
 
 
 @app.post("/register")
-@log
 def register(request: Request,
             reg_name: str = Form(...),
             reg_password: str = Form(...)):
@@ -218,7 +175,6 @@ def register(request: Request,
 
 
 @app.get("/home/{username}", response_class=HTMLResponse)
-@log
 def login_page(request: Request):
     user_name = request.cookies.get("user_name")
     session_id = request.cookies.get("session_id")
