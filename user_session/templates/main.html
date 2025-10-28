@@ -9,6 +9,12 @@
 <body>
   <div class="choices" id="choices">
     <h1 id="choice_name"></h1>
+    {% if error %}
+      <p class="error" style="color: rgb(255, 0, 0);">{{ error }}</p>
+    {% endif %}
+    {% if message %}
+      <p class="message" style="color: rgb(255, 123, 0);">{{ message }}</p>
+    {% endif %}
 
     <div class="question">
       <h2>Вопрос 1</h2>
@@ -92,9 +98,6 @@
 
   <div class="result" id="result">
     <h1 id="result_name"></h1>
-    <div class="answers">
-        <p id="answer"></p>
-    </div>
     <form method="get" action="/register">
       <button id="to_register_btn" type="submit">Зарегистрировать нового хомячка</button>
     </form>

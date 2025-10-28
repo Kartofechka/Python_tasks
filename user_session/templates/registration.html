@@ -9,17 +9,23 @@
 <body>
 
   <div class="user_data" id="user_data">
-    <form class="inputs" method="post" action="/to_login">
+    <form class="inputs" method="post" action="/register">
       <h2>Регистрицая пользователя</h2>
+        {% if error %}
+          <p class="error" style="color: rgb(255, 0, 0);">{{ error }}</p>
+        {% endif %}
+        {% if message %}
+          <p class="message" style="color: rgb(255, 123, 0);">{{ message }}</p>
+        {% endif %}
       <div class="input_with_icon">
         <img src="../assets/user.jpg" alt="иконка">
-        <input id="reg_name" name="reg_username" type="text" placeholder="Имя" required>
+        <input id="reg_name" name="reg_name" type="text" placeholder="Имя" required>
       </div>
       <div class="input_with_icon">
         <img src="../assets/password.png" alt="иконка">
         <input id="reg_password" name="reg_password" type="password" placeholder="Пароль" required>
       </div>
-      <button id="login_btn" type="submit">Зарегистрировать</button>
+      <button id="register_btn" type="submit">Зарегистрировать</button>
     </form>
   </div>
 </body>
