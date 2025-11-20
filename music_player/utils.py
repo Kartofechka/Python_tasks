@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3
-from PIL.Image import Image
+from PIL import Image
 
 
 @dataclass
@@ -19,7 +19,7 @@ class Song:
         return f"{self.title}\n{self.artist}"
     
 
-def get_cover_img(mp3_file_path: str) -> Image | None:
+def get_cover_img(mp3_file_path: str):
     audiofile = MP3(mp3_file_path, ID3=ID3)
     cover_img = None
 
