@@ -67,17 +67,17 @@ class App:
 
         prewies_button = ctk.CTkButton(button_frame, text="⏮", width=30, height=30,
                                     corner_radius=15, font=("Arial", 30),
-                                    fg_color="transparent", command=prev_song)
+                                    fg_color="transparent", command=self.prev_song)
         prewies_button.pack(side="left", padx=10)
 
         play_button = ctk.CTkButton(button_frame, text="⏵", width=30, height=30,
                                     corner_radius=15, font=("Arial", 30),
-                                    fg_color="transparent", command=play_song(current_index))
+                                    fg_color="transparent", command=self.play_song(self._curr_idx))
         play_button.pack(side="left", padx=10)
 
         next_button = ctk.CTkButton(button_frame, text="⏭", width=30, height=30,
                                     corner_radius=15, font=("Arial", 30),
-                                    fg_color="transparent", command=next_song)
+                                    fg_color="transparent", command=self.next_song)
         next_button.pack(side="left", padx=10)
 
         nail_button = ctk.CTkButton(button_frame, text="📌", width=30, height=30,
@@ -85,48 +85,41 @@ class App:
         nail_button.pack(side="left", padx=10)
 
 
-    def play_song(index):
+    def play_song(self, index):
         if pause_mod == False:
-            play_button.configure(text="⏸")
+            self.play_button.configure(text="⏸")
             pause_mod = True
         else:
-            play_button.configure(text="⏭")
+            self.play_button.configure(text="⏭")
             pause_mod = False
-        if 0 <= index < len(songs):
+        if 0 <= index < len(self._songs):
             current_index = index
-            current_song = songs[current_index]
+            current_song = self._songs[current_index]
 
             pygame.mixer.music.load(current_song["file"])
             pygame.mixer.music.play()
 
-            firstMenu()
+    def next_song(self):
+        if self._songs:
+            new_index = (self._curr_idx + 1) % len(self._songs)
+            self._songsplay_song(new_index)
 
 
-    def next_song():
-        global current_index
-        if songs:
-            new_index = (current_index + 1) % len(songs)
-            play_song(new_index)
-
-
-    def prev_song():
-        global current_index
-        if songs:
-            new_index = (current_index - 1) % len(songs)
-            play_song(new_index)
+    def prev_song(self):
+        if self._songs:
+            new_index = (self._curr_idx - 1) % len(self._songs)
+            self.play_song(new_index)
 
 
     def set_volume(value):
         pygame.mixer.music.set_volume(value)
 
 
-    def set_opacity(value):
-        main_window.attributes("-alpha", value)
+    def set_opacity(self, value):
+        self._main_window.attributes("-alpha", value)
 
-
-
-    def slider_settings(text, from_, command, set_value):
-        frame = ctk.CTkFrame(main_window, fg_color="transparent")
+    def slider_settings(self, text, from_, command, set_value):
+        frame = ctk.CTkFrame(self._main_window, fg_color="transparent")
         frame.pack(pady=10)
 
         label = ctk.CTkLabel(frame, text=text, font=("Arial", 30))
@@ -137,7 +130,6 @@ class App:
         slider.pack(pady=10)
         
         
-
     def run(self):
         self.clear_window()
         self.output_music_info()
@@ -146,5 +138,5 @@ class App:
         progressbar.pack(pady=10)
 
         self.give_operate_buttons()
-        slider_settings(text='🕪', from_=0, command=set_volume, set_value=0.5)
-        slider_settings(text='🌓', from_=0.3, command=set_opacity, set_value=1)
+        self.slider_settings(text='🕪', from_=0, command=self.set_volume, set_value=0.5)
+        self.slider_settings(text='🌓', from_=0.3, command=self.set_opacity, set_value=1)
