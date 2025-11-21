@@ -14,7 +14,7 @@ class App:
         self._main_window.title("PotatoPlayer")
         self._main_window.iconbitmap("./assets/favicon.ico")
         screen_width = self._main_window.winfo_screenwidth()
-        win_width = int(screen_width * 0.325)
+        win_width = int(screen_width * 0.25)
         win_height = int(win_width * 5 / 4)
         self._main_window.geometry(f"{win_width}x{win_height}")
         self._main_window.resizable(False, False)
@@ -23,6 +23,13 @@ class App:
         self.pause_mod = True
         self.topmost = False
         self.seek_offset = 0
+        self.icons = {
+            "play": ctk.CTkImage(Image.open("./assets/play.png"), size=(40, 40)),
+            "pause": ctk.CTkImage(Image.open("./assets/pause.png"), size=(40, 40)),
+            "next": ctk.CTkImage(Image.open("./assets/next.png"), size=(40, 40)),
+            "prev": ctk.CTkImage(Image.open("./assets/prev.png"), size=(40, 40)),
+            "menu": ctk.CTkImage(Image.open("./assets/menu.png"), size=(40, 40)),
+        }
         self.create_interface()
         self.update_song_info()
 
@@ -52,62 +59,63 @@ class App:
     def give_operate_buttons(self):
         button_frame = ctk.CTkFrame(self._main_window, fg_color="transparent")
         button_frame.pack(pady=20)
+
         ctk.CTkButton(
             button_frame,
-            text="☰",
-            width=30,
-            height=30,
-            corner_radius=15,
-            font=("Arial", 30),
+            image=self.icons["menu"],
+            text="",
+            width=40,
+            height=40,
             fg_color="transparent",
+            hover=False,
             command=self.get_all_music_menu
         ).pack(side="left", padx=10)
 
         ctk.CTkButton(
             button_frame,
-            text="⏮",
-            width=30,
-            height=30,
-            corner_radius=15,
-            font=("Arial", 30),
+            image=self.icons["prev"],
+            text="",
+            width=40,
+            height=40,
             fg_color="transparent",
+            hover=False,
             command=self.prev_song
         ).pack(side="left", padx=10)
 
         self.play_button = ctk.CTkButton(
             button_frame,
-            text="⏵",
-            width=30,
-            height=30,
-            corner_radius=15,
-            font=("Arial", 30),
+            image=self.icons["play"],
+            text="",
+            width=40,
+            height=40,
             fg_color="transparent",
+            hover=False,
             command=self.toggle_play
         )
         self.play_button.pack(side="left", padx=10)
 
         ctk.CTkButton(
             button_frame,
-            text="⏭",
-            width=30,
-            height=30,
-            corner_radius=15,
-            font=("Arial", 30),
+            image=self.icons["next"],
+            text="",
+            width=40,
+            height=40,
             fg_color="transparent",
+            hover=False,
             command=self.next_song
         ).pack(side="left", padx=10)
 
         self.nail_button = ctk.CTkButton(
             button_frame,
             text="📌",
-            width=30,
-            height=30,
-            corner_radius=15,
-            font=("Arial", 30),
+            width=40,
+            height=40,
             fg_color="transparent",
+            hover=False,
             command=self.toggle_topmost
         )
         self.nail_button.pack(side="left", padx=10)
+
 
     def toggle_topmost(self):
         self.topmost = not self.topmost
@@ -123,7 +131,7 @@ class App:
             current_song = self._songs[self._curr_idx]
             pygame.mixer.music.load(current_song.song_path)
             pygame.mixer.music.play()
-            self.play_button.configure(text="⏸")
+            self.play_button.configure(image=self.icons["pause"])
             self.pause_mod = False
 
             self.seek_offset = 0
@@ -139,10 +147,11 @@ class App:
             return
         if pygame.mixer.music.get_busy() and not self.pause_mod:
             pygame.mixer.music.pause()
-            self.play_button.configure(text="⏵")
+            self.play_button.configure(image=self.icons["play"])
             self.pause_mod = True
         else:
             self.play_song(self._curr_idx)
+
 
     def next_song(self):
         if self._songs:
@@ -167,8 +176,8 @@ class App:
         return slider
 
     def get_all_music_menu(self):
-        music_menu = MusicMenu(self)
-        music_menu.run()
+        self.music_menu = MusicMenu(self)
+        self.music_menu.run()
 
     def get_settings_menu(self):
         settings_menu = SettingsMenu(self)
@@ -183,6 +192,7 @@ class App:
             corner_radius=20,
             font=("Arial", 25),
             fg_color="transparent",
+            hover=False,
             command=self.get_settings_menu
         )
 
@@ -192,7 +202,7 @@ class App:
         self.info_frame.pack(pady=10)
         self.progress_slider = ctk.CTkSlider(self._main_window, width=300, from_=0, to=100, command=self.seek_song)
         self.progress_slider.pack(pady=10, fill="x")
-        self.progress_slider.place(relx=0.5, rely=0.615, anchor="center")
+        self.progress_slider.place(relx=0.5, rely=0.62, anchor="center")
 
         self.time_label = ctk.CTkLabel(self._main_window, text="0:00 / 0:00", font=("Arial", 15))
         self.time_label.pack()
@@ -231,7 +241,7 @@ class App:
 class MusicMenu:
     def __init__(self, app: App):
         self.app = app
-        self._main_window = ctk.CTk()
+        self._main_window = ctk.CTkToplevel(app._main_window)
         self._main_window.title("PotatoPlayer/AllMusic")
         self._main_window.iconbitmap("./assets/favicon.ico")
 
@@ -259,11 +269,20 @@ class MusicMenu:
 
                 ctk.CTkLabel(row, text=song.title, anchor="w", font=("Arial", 14)).pack(side="left", padx=10, fill="x", expand=True)
 
-                ctk.CTkLabel(row, text=song.artist, anchor="w", font=("Arial", 14, "italic")).pack(side="left", padx=10, fill="x", expand=True)
+                ctk.CTkLabel(row, text=song.artist, anchor="w", font=("Arial", 14)).pack(side="left", padx=10, fill="x", expand=True)
 
-                play_btn = ctk.CTkButton(row, text="▶", width=30, height=30, corner_radius=15,
-                                         fg_color="transparent", command=lambda i=idx: app.play_song(i))
+                play_btn = ctk.CTkButton(
+                    row,
+                    image=self.app.icons["play"],
+                    text="",
+                    width=30,
+                    height=30,
+                    fg_color="transparent",
+                    hover=False,
+                    command=lambda i=idx: app.play_song(i)
+                )
                 play_btn.pack(side="right", padx=5)
+
         else:
             ctk.CTkLabel(scroll_frame, text="Нет музыки в папке").pack(pady=10)
 
@@ -298,6 +317,8 @@ class SettingsMenu:
 
     def set_opacity(self, value):
         self.app._main_window.attributes("-alpha", value)
+        self.app.music_menu._main_window.attributes("-alpha", value)    
+
 
     def slider_settings(self, text, from_, command, set_value):
         frame = ctk.CTkFrame(self._main_window, fg_color="transparent")
