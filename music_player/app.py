@@ -29,6 +29,7 @@ class App:
             "next": ctk.CTkImage(Image.open("./assets/next.png"), size=(40, 40)),
             "prev": ctk.CTkImage(Image.open("./assets/prev.png"), size=(40, 40)),
             "menu": ctk.CTkImage(Image.open("./assets/menu.png"), size=(40, 40)),
+            "pin": ctk.CTkImage(Image.open("./assets/pin.png"), size=(40, 40)),
         }
         self.create_interface()
         self.update_song_info()
@@ -98,6 +99,7 @@ class App:
             button_frame,
             image=self.icons["next"],
             text="",
+            font=("Arial", 40),
             width=40,
             height=40,
             fg_color="transparent",
@@ -107,7 +109,8 @@ class App:
 
         self.nail_button = ctk.CTkButton(
             button_frame,
-            text="📌",
+            image=self.icons["pin"],
+            text="",
             width=40,
             height=40,
             fg_color="transparent",
